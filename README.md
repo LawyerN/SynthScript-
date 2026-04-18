@@ -1,4 +1,4 @@
-# SynthScript-
+# SynthScript- język do algorytmicznej kompozycji i syntezy muzyki
 ### Dane
 Bartosz Gdowski (bgdowski@student.agh.edu.pl)
 Karol Jachym (kjachym@student.agh.edu.pl)
