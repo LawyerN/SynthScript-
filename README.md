@@ -25,26 +25,116 @@ Sposób realizacji skanera/parsera: Użycie biblioteki Lark (dla Pythona). Grama
 
 ### Opis tokenów (Skaner)
 
-| Nazwa tokenu | Wzorzec (RegEx / Znak) | Opis i zastosowanie w SynthScript | Przykłady |
-| :--- | :--- | :--- | :--- |
-| `KW_PLAY` | `"play"` | Słowo kluczowe wywołujące odtworzenie nuty lub akordu. | `play` |
-| `KW_REST` | `"rest"` | Słowo kluczowe oznaczające pauzę muzyczną. | `rest` |
-| `KW_LOOP` | `"loop"` | Słowo kluczowe rozpoczynające pętlę. | `loop` |
-| `KW_IF` | `"if"` | Słowo kluczowe instrukcji warunkowej. | `if` |
-| `KW_TEMPO` | `"tempo"` | Słowo kluczowe do globalnej zmiany BPM. | `tempo` |
-| `KW_INSTR` | `"instrument"` | Słowo kluczowe zmiany instrumentu (barwy dźwięku). | `instrument` |
-| `NOTE` | `/[A-G](#\|b)?[0-9]/` | Literał nuty: litera A-G, opcjonalny krzyżyk/bemol i oktawa. | `C4`, `F#5`, `Bb3` |
-| `NUMBER` | `/[0-9]+/` | Literał liczbowy całkowity. Służy do określania m.in. BPM, liczby iteracji w pętli oraz wartości rytmicznych (np. 4, 8, 16). | `120`, `16`, `4` |
-| `ID` | `/[a-zA-Z_][a-zA-Z0-9_]*/` | Identyfikator (nazwa zmiennej wprowadzana przez użytkownika). | `licznik`, `moja_nuta` |
-| `OP_ASSIGN` | `"="` | Operator przypisania. | `=` |
-| `OP_COMP` | `"==" \| "!=" \| ">" \| "<" \| ">=" \| "<="`| Operatory relacyjne do sprawdzania warunków. | `==`, `>=` |
-| `OP_ARITH` | `"+" \| "-" \| "*" \| "/"` | Operatory arytmetyczne do operacji na zmiennych. | `+`, `-` |
-| `LBRACE` | `"{"` | Lewa klamra otwierająca blok kodu (np. w pętli). | `{` |
-| `RBRACE` | `"}"` | Prawa klamra zamykająca blok kodu. | `}` |
-| `LBRACKET` | `"["` | Lewy nawias kwadratowy otwierający definicję akordu. | `[` |
-| `RBRACKET` | `"]"` | Prawy nawias kwadratowy zamykający definicję akordu. | `]` |
-| `COMMA` | `","` | Przecinek jako separator nut wewnątrz akordu. | `,` |
+| Nazwa tokenu     | Wzorzec (RegEx / Znak)                       | Opis i zastosowanie w SynthScript                                                                                            | Przykłady              |
+|:-----------------|:---------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------|:-----------------------|
+| `KW_PLAY`        | `"play"`                                     | Słowo kluczowe wywołujące odtworzenie nuty lub akordu.                                                                       | `play`                 |
+| `KW_TRACK`       | `"track"`                                    | Słowo kluczowe rozpoczynające blok definicji ścieżki dla danego instrumentu.                                                 | `track`                |
+| `KW_METER`       | `"meter"`                                    | Słowo kluczowe definiujące globalne metrum utworu.                                                                           | `meter`                |
+| `KW_REST`        | `"rest"`                                     | Słowo kluczowe oznaczające pauzę muzyczną.                                                                                   | `rest`                 |
+| `KW_LOOP`        | `"loop"`                                     | Słowo kluczowe rozpoczynające pętlę.                                                                                         | `loop`                 |
+| `KW_IF`          | `"if"`                                       | Słowo kluczowe instrukcji warunkowej.                                                                                        | `if`                   |
+| `KW_TEMPO`       | `"tempo"`                                    | Słowo kluczowe do globalnej zmiany BPM.                                                                                      | `tempo`                |
+| `KW_INSTR`       | `"instrument"`                               | Słowo kluczowe zmiany instrumentu (barwy dźwięku).                                                                           | `instrument`           |
+| `NOTE`           | `/[A-G](#\|b)?[0-9]/`                        | Literał nuty: litera A-G, opcjonalny krzyżyk/bemol i oktawa.                                                                 | `C4`, `F#5`, `Bb3`     |
+| `VELOCITY_LABEL` | `/(pp\|p\|mp\|mf\|f\|ff)/`                   | Symbole głośności.                                                                                                           | `f`, `pp`              |
+| `NUMBER`         | `/[0-9]+/`                                   | Literał liczbowy całkowity. Służy do określania m.in. BPM, liczby iteracji w pętli oraz wartości rytmicznych (np. 4, 8, 16). | `120`, `16`, `4`       |
+| `ID`             | `/[a-zA-Z_][a-zA-Z0-9_]*/`                   | Identyfikator (nazwa zmiennej wprowadzana przez użytkownika).                                                                | `licznik`, `moja_nuta` |
+| `OP_ASSIGN`      | `"="`                                        | Operator przypisania.                                                                                                        | `=`                    |
+| `OP_COMP`        | `"==" \| "!=" \| ">" \| "<" \| ">=" \| "<="` | Operatory relacyjne do sprawdzania warunków.                                                                                 | `==`, `>=`             |
+| `OP_ARITH`       | `"+" \| "-" \| "*" \| "/"`                   | Operatory arytmetyczne do operacji na zmiennych.                                                                             | `+`, `-`               |
+| `LBRACE`         | `"{"`                                        | Lewa klamra otwierająca blok kodu (np. w pętli).                                                                             | `{`                    |
+| `RBRACE`         | `"}"`                                        | Prawa klamra zamykająca blok kodu.                                                                                           | `}`                    |
+| `LBRACKET`       | `"["`                                        | Lewy nawias kwadratowy otwierający definicję akordu.                                                                         | `[`                    |
+| `RBRACKET`       | `"]"`                                        | Prawy nawias kwadratowy zamykający definicję akordu.                                                                         | `]`                    |
+| `BAR`            | `"\|"`                                       | Separator licznika i mianownika w metrum.                                                                                    | `\|`                   |
+| `COMMA`          | `","`                                        | Przecinek jako separator nut wewnątrz akordu.                                                                                | `,`                    |
 
 **Dodatkowe zasady (Ignorowane przez parser):**
 * **Białe znaki:** Spacje, tabulatory i znaki nowej linii (`/[ \t\n\r]+/`) są ignorowane przez skaner.
 * **Komentarze:** Linie zaczynające się od `//` są ignorowane, co pozwala użytkownikowi dokumentować swój kod.
+
+### Gramatyka języka (Lark EBNF)
+
+Poniżej znajduje się kompletna gramatyka wykorzystywana przez kompilator:
+
+```ebnf
+?start: program
+
+program: meter_stmt? track+
+
+track: KW_TRACK STRING LBRACE statement* RBRACE
+
+?statement: assignment
+          | play_stmt
+          | rest_stmt
+          | tempo_stmt
+          | instr_stmt
+          | loop_stmt
+          | if_stmt
+
+meter_stmt: KW_METER NUMBER BAR NUMBER
+
+assignment: ID OP_ASSIGN expression
+
+play_stmt: KW_PLAY (note | chord) [duration] [velocity]
+
+rest_stmt: KW_REST duration
+
+tempo_stmt: KW_TEMPO NUMBER
+
+instr_stmt: KW_INSTR NUMBER
+
+loop_stmt: KW_LOOP NUMBER LBRACE statement* RBRACE
+
+if_stmt: KW_IF "(" condition ")" LBRACE statement* RBRACE
+
+note: NOTE
+
+chord: LBRACKET note (COMMA note)* RBRACKET
+
+duration: NUMBER
+
+velocity: VELOCITY_LABEL | NUMBER
+
+condition: expression OP_COMP expression
+
+?expression: term (OP_ARITH term)*
+
+?term: NUMBER 
+     | ID 
+     | "(" expression ")"
+
+// --- TERMINALE (TOKENY) ---
+
+KW_PLAY: "play"
+KW_TRACK: "track"
+KW_METER: "meter"
+KW_REST: "rest"
+KW_LOOP: "loop"
+KW_IF: "if"
+KW_TEMPO: "tempo"
+KW_INSTR: "instrument"
+
+NOTE.2: /[A-G](#|b)?[0-9]/
+VELOCITY_LABEL.2: "pp" | "p" | "mp" | "mf" | "f" | "ff"
+
+NUMBER: /[0-9]+/
+STRING: /"[^"]*"/
+ID: /[a-zA-Z_][a-zA-Z0-9_]*/
+
+BAR: "|"
+OP_ASSIGN: "="
+OP_COMP: "==" | "!=" | ">" | "<" | ">=" | "<="
+OP_ARITH: "+" | "-" | "*" | "/"
+
+LBRACE: "{"
+RBRACE: "}"
+LBRACKET: "["
+RBRACKET: "]"
+COMMA: ","
+
+%import common.WS
+%ignore WS
+
+COMMENT: /\/\/.*/
+%ignore COMMENT
