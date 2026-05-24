@@ -1,0 +1,60 @@
+meter 4|4
+
+
+track "Prawa Reka" {
+    instrument 1
+    tempo 140
+
+    // --- TAKT 1 (Metrum 4/4) ---
+    loop 2 {
+        play [F4, A4] 8 $f
+    }
+    loop 2 {
+        play [E4, G4] 8 $f
+    }
+    play [D4, F4] 2 $f
+
+    // --- TAKT 2 (Metrum 4/4) ---
+    loop 2 {
+        play [D4, F4] 8 $f
+    }
+    loop 2 {
+        play [C4, E4] 8 $f
+    }
+    play [Bb3, D4] 2 $f
+
+    // --- TAKT 3 (Metrum 4/4) ---
+    loop 2 {
+        play [Bb3, D4] 8 $f
+    }
+    loop 2 {
+        play [A3, C4] 8 $f
+    }
+    play [G3, Bb3] 4 $f
+
+    meter 3|4
+
+    play F4 8 $ff
+    play A3 8 $mp
+    play Bb3 8 $mp
+    play F4 8 $mp
+    play Bb3 8 $mp
+    play A3 8 $mp
+}
+
+
+track "Lewa Reka" {
+    instrument 1
+    tempo 140
+
+
+    rest 1
+    rest 1
+    rest 1
+
+    // --- TAKT 4 (Automatycznie przechodzi w 3/4 razem z całą siatką) ---
+    // Lewa ręka gra trzy ćwiartki (4) dźwięku D3 pod melodią prawej ręki
+    play D3 4 $mf
+    play D3 4 $mf
+    play D3 4 $mf
+}

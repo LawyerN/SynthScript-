@@ -1,0 +1,14 @@
+meter 4|4
+
+track "Melodia" {
+    instrument 1
+    tempo 130
+
+    loop 2 {
+        play C4 4 f
+        play E4 4 f
+        play G4 4 f
+        play [C4, E4, G4] 2 ff
+        rest 4
+    }
+}
