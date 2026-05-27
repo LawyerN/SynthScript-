@@ -48,7 +48,13 @@ Sposób realizacji skanera/parsera: Użycie biblioteki Lark (dla Pythona). Grama
 | `RBRACKET`       | `"]"`                                        | Prawy nawias kwadratowy zamykający definicję akordu.                                                                         | `]`                    |
 | `BAR`            | `"\|"`                                       | Separator licznika i mianownika w metrum.                                                                                    | `\|`                   |
 | `COMMA`          | `","`                                        | Przecinek jako separator nut wewnątrz akordu.                                                                                | `,`                    |
-
+| `KW_FUNC`        | `"func"`                                     | Słowo kluczowe rozpoczynające definicję makra.                                                                               | `func`                 |
+| `KW_AND`         | `"and"`                                      | Operator logiczny koniunkcji (oraz) używany w warunkach złożonych.                                                           | `and`                  |
+| `KW_OR`          | `"or"`                                       | Operator logiczny alternatywy (lub) używany w warunkach złożonych.                                                           | `or`                   |
+| `KW_NOT`         | `"not"`                                      | Operator logiczny negacji (nie) używany w warunkach złożonych.                                                               | `not`                  |
+| `STRING`         | `/"[^"]*"/`                                  | Literał tekstowy w podwójnym cudzysłowie (służy do nazywania ścieżek).                                                       | `"Bas"`, `"Piano"`     |
+| `LPAR`           | `"("`                                        | Lewy nawias okrągły (grupowanie wyrażeń, parametry funkcji, warunki if).                                                     | `(`                    |
+| `RPAR`           | `")"`                                        | Prawy nawias okrągły zamykający.                                                                                             | `)`                    |
 **Dodatkowe zasady (Ignorowane przez parser):**
 * **Białe znaki:** Spacje, tabulatory i znaki nowej linii (`/[ \t\n\r]+/`) są ignorowane przez skaner.
 * **Komentarze:** Linie zaczynające się od `//` są ignorowane, co pozwala użytkownikowi dokumentować swój kod.
@@ -60,9 +66,12 @@ Poniżej znajduje się kompletna gramatyka wykorzystywana przez kompilator:
 ```ebnf
 ?start: program
 
-program: meter_stmt? track+
+program: meter_stmt? func_def* track+
 
 track: KW_TRACK STRING LBRACE statement* RBRACE
+
+func_def: KW_FUNC ID LPAR [parameters] RPAR LBRACE statement* RBRACE
+parameters: ID (COMMA ID)*
 
 ?statement: assignment
           | play_stmt
@@ -71,38 +80,48 @@ track: KW_TRACK STRING LBRACE statement* RBRACE
           | instr_stmt
           | loop_stmt
           | if_stmt
+          | func_call
 
 meter_stmt: KW_METER NUMBER BAR NUMBER
 
 assignment: ID OP_ASSIGN expression
 
-play_stmt: KW_PLAY (note | chord) [duration] [velocity]
+play_stmt: KW_PLAY (note | chord)                   -> play_default
+         | KW_PLAY (note | chord) expression         -> play_dur
+         | KW_PLAY (note | chord) expression expression -> play_dur_vel_num
+         | KW_PLAY (note | chord) expression VELOCITY_LABEL -> play_dur_vel_lab
+         | KW_PLAY (note | chord) VELOCITY_LABEL    -> play_vel_label
 
-rest_stmt: KW_REST duration
+rest_stmt: KW_REST expression
 
-tempo_stmt: KW_TEMPO NUMBER
+tempo_stmt: KW_TEMPO expression
 
-instr_stmt: KW_INSTR NUMBER
+instr_stmt: KW_INSTR expression
 
-loop_stmt: KW_LOOP NUMBER LBRACE statement* RBRACE
+loop_stmt: KW_LOOP expression LBRACE statement* RBRACE
 
-if_stmt: KW_IF "(" condition ")" LBRACE statement* RBRACE
+if_stmt: KW_IF LPAR condition RPAR LBRACE statement* RBRACE
+
+func_call: ID LPAR [arguments] RPAR
+arguments: expression (COMMA expression)*
 
 note: NOTE
 
 chord: LBRACKET note (COMMA note)* RBRACKET
 
-duration: NUMBER
+?condition: or_test
 
-velocity: VELOCITY_LABEL | NUMBER
-
-condition: expression OP_COMP expression
+?or_test: and_test (KW_OR and_test)*
+?and_test: not_test (KW_AND not_test)*
+?not_test: KW_NOT not_test -> logical_not
+         | expression OP_COMP expression
+         | LPAR condition RPAR
 
 ?expression: term (OP_ARITH term)*
 
-?term: NUMBER 
-     | ID 
-     | "(" expression ")"
+?term: NUMBER
+     | ID
+     | LPAR expression RPAR
 
 // --- TERMINALE (TOKENY) ---
 
@@ -114,6 +133,11 @@ KW_LOOP: "loop"
 KW_IF: "if"
 KW_TEMPO: "tempo"
 KW_INSTR: "instrument"
+KW_FUNC: "func"
+
+KW_AND: "and"
+KW_OR: "or"
+KW_NOT: "not"
 
 NOTE.2: /[A-G](#|b)?[0-9]/
 VELOCITY_LABEL.2: "pp" | "p" | "mp" | "mf" | "f" | "ff"
@@ -131,6 +155,8 @@ LBRACE: "{"
 RBRACE: "}"
 LBRACKET: "["
 RBRACKET: "]"
+LPAR: "("
+RPAR: ")"
 COMMA: ","
 
 %import common.WS
