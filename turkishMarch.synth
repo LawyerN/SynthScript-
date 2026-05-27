@@ -1,0 +1,108 @@
+meter 2|4
+
+track "Melodia" {
+    instrument 1
+    tempo 130
+
+    loop 2 {
+        play B3 16 $f
+        play A3 16 $f
+        play G#3 16 $f
+        play A3 16 $f
+
+        play C4 8 $f
+        rest 8
+        play D4 16 $f
+        play C4 16 $f
+        play B3 16 $f
+        play C4 16 $f
+
+        play E4 8 $f
+        rest 8
+        play F4 16 $f
+        play E4 16 $f
+        play D#4 16 $f
+        play E4 16 $f
+
+        play B4 16 $f
+        play A4 16 $f
+        play G#4 16 $f
+        play A4 16 $f
+        play B4 16 $f
+        play A4 16 $f
+        play G#4 16 $f
+        play A4 16 $f
+
+        play C5 4 $f
+        play A4 8 $f
+        play C5 8 $f
+
+        play G4 64 $f
+        play A4 64 $f
+        play B4 8 $f
+
+        play [F#4, A4] 8 $f
+        play [E4, G4] 8 $f
+        play [F#4, A4] 8 $f
+
+        play G4 64 $f
+        play A4 64 $f
+        play B4 8 $f
+
+        play [F#4, A4] 8 $f
+        play [E4, G4] 8 $f
+        play [F#4, A4] 8 $f
+
+        play G4 64 $f
+        play A4 64 $f
+        play B4 8 $f
+
+        play [F#4, A4] 8 $f
+        play [E4, G4] 8 $f
+        play [D#4, F#4] 8 $f
+        play E4 4 $f
+    }
+}
+
+track "LeftHand" {
+    instrument 1
+    tempo 130
+
+    loop 2 {
+        rest 4
+        loop 2 {
+            play A2 8 $f
+            play [C3, E3] 8 $f
+            play [C3, E3] 8 $f
+            play [C3, E3] 8 $f
+        }
+
+        loop 2 {
+            play A2 8 $f
+            play [C3, E3] 8 $f
+        }
+
+        play A2 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+
+        loop 2 {
+            rest 32
+
+            play E2 8 $f
+            play [B2, E3] 8 $f
+            play [B2, E3] 8 $f
+            play [B2, E3] 8 $f
+        }
+
+        rest 32
+        play E2 8 $f
+        play [B2, E3] 8 $f
+
+        play B1 8 $f
+        play B2 8 $f
+
+        play E2 4 $f
+    }
+}
