@@ -62,6 +62,32 @@ track "Melodia" {
         play [D#4, F#4] 8 $f
         play E4 4 $f
     }
+
+    loop 2 {
+	//Tu zaczyna sie druga czesc
+	play [C4, E4] 8 $mf
+	play [D4, F4] 8 $mf
+	play [E4, G4] 8 $mf
+	play [E4, G4] 8 $mf
+	play A4 16 $mf
+	play G4 16 $mf
+	play F4 16 $mf
+	play E4 16 $mf
+	play [B3, D4] 8 $mf
+        play G3 8 $mf
+    }
+    loop 2 {
+        play [A3, C4] 8 $mf
+        play [B3, D4] 8 $mf
+        play [C4, E4] 8 $mf
+        play [C4, E4] 8 $mf
+        play F4 16 $mf
+        play E4 16 $mf
+        play D4 16 $mf
+        play C4 16 $mf
+        play [G#3,B3] 8 $mf
+        play E3 8 $mf
+    }
 }
 
 track "LeftHand" {
@@ -104,5 +130,22 @@ track "LeftHand" {
         play B2 8 $f
 
         play E2 4 $f
+    }
+    // Druga czesc
+    loop 2 {
+        rest 4
+        play C2 8 $mf
+        play C3 8 $mf
+        play E2 8 $mf
+        play E3 8 $mf
+        play G2 4 $mf
+    }
+    loop 2 {
+        rest 4
+        play A1 8 $mf
+        play A2 8 $mf
+        play C2 8 $mf
+        play C3 8 $mf
+        play E2 4 $mf
     }
 }
