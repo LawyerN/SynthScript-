@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import os
+import re
 
 from compiler.midi_generator import generate_midi
 from compiler.visitor import SynthScriptVisitor
@@ -21,6 +22,7 @@ class SynthScriptApp(ctk.CTk):
         self.grid_rowconfigure(0, weight=4)
         self.grid_rowconfigure(1, weight=1)
 
+        # --- Podział na Layout ---
         self.editor_frame = ctk.CTkFrame(self)
         self.editor_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
@@ -50,27 +52,34 @@ class SynthScriptApp(ctk.CTk):
         self.line_numbers.pack(side="left", fill="y", padx=(0, 2))
         self.code_editor.pack(side="right", expand=True, fill="both")
 
-        self.code_editor.bind("<KeyRelease>", lambda e: self.sync_line_numbers())
+        # --- Konfiguracja Kolorowania Składni (Tagi) ---
+        self.setup_syntax_tags()
+
+        # --- Bindy klawiszy i zdarzeń ---
+        self.code_editor.bind("<KeyRelease>", self.on_content_changed)
         self.code_editor.bind("<MouseWheel>", lambda e: self.sync_scroll())
         self.code_editor.bind("<Configure>", lambda e: self.sync_line_numbers())
         self.code_editor.bind("<Tab>", self.insert_spaces_instead_of_tab)
 
         start_code = (
-            "meter 2|4\n"
+            "meter 2|4\n\n"
+            "x = 2\n"
             "track \"Melodia\" {\n"
             "    instrument 1\n"
             "    tempo 130\n\n"
-            "    loop 2 {\n"
+            "    loop x {\n"
             "        play B3 16 $f\n"
             "        play A3 16 $f\n"
-            "        play G#3 16 $\n"
+            "        play G#3 16 $f\n"
             "        play A3 16 $f\n"
             "    }\n"
             "}"
         )
         self.code_editor.insert("0.0", start_code)
+        self.highlight_syntax()
         self.sync_line_numbers()
 
+        # --- Reszta komponentów UI (Kompilator, Pliki, Odtwarzacz) ---
         self.control_frame = ctk.CTkFrame(self)
         self.control_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
@@ -129,6 +138,49 @@ class SynthScriptApp(ctk.CTk):
 
         self.refresh_file_list()
 
+    # --- Logika Kolorowania Składni ---
+    def setup_syntax_tags(self):
+        # Pobieramy surowy obiekt tkinter schowany pod CustomTkinter
+        textbox = self.code_editor._textbox
+        textbox.tag_config("keyword", foreground="#ff79c6", font=("Courier", 14, "bold"))
+        textbox.tag_config("note", foreground="#50fa7b")
+        textbox.tag_config("velocity", foreground="#ffb86c")
+        textbox.tag_config("comment", foreground="#6272a4", font=("Courier", 14, "italic"))
+        textbox.tag_config("string", foreground="#f1fa8c")
+        textbox.tag_config("number", foreground="#bd93f9")
+
+    def highlight_syntax(self):
+        textbox = self.code_editor._textbox
+
+        # Usuwamy stare tagi przed ponownym kolorowaniem
+        for tag in ["keyword", "note", "velocity", "comment", "string", "number"]:
+            textbox.tag_remove(tag, "1.0", "end")
+
+        code = textbox.get("1.0", "end-1c")
+
+        # Definicje regexów odpowiadające tokenom z EBNF
+        rules = [
+            ("comment", r"//.*"),
+            ("string", r'"[^"]*"'),
+            ("keyword", r"\b(play|track|meter|rest|loop|if|tempo|instrument)\b"),
+            ("note", r"\b[A-G](#|b)?[0-9]\b"),
+            ("velocity", r"\$(pp|p|mp|mf|f|ff)\b"),
+            ("number", r"\b[0-9]+\b")
+        ]
+
+        # Przeszukiwanie linii po linii i aplikowanie stylów
+        for tag_name, regex in rules:
+            for match in re.finditer(regex, code):
+                start_idx = f"1.0 + {match.start()} chars"
+                end_idx = f"1.0 + {match.end()} chars"
+                textbox.tag_add(tag_name, start_idx, end_idx)
+
+    def on_content_changed(self, event):
+        # Wywoływane przy puszczeniu klawisza - aktualizuje cyfry i kolory
+        self.sync_line_numbers()
+        self.highlight_syntax()
+
+    # --- Obsługa Edytora i Synchronizacji ---
     def log_to_console(self, text, is_error=False):
         self.console.configure(state="normal")
         if is_error:
@@ -154,7 +206,7 @@ class SynthScriptApp(ctk.CTk):
 
     def insert_spaces_instead_of_tab(self, event):
         self.code_editor.insert("insert", "    ")
-        self.sync_line_numbers()
+        self.on_content_changed(None)
         return "break"
 
     def refresh_file_list(self):
@@ -213,7 +265,7 @@ class SynthScriptApp(ctk.CTk):
                     self.code_editor.insert("0.0", f.read())
                 self.log_to_console(f"Wczytano kod ze skryptu: {selected_file}")
                 self.status_file_label.configure(text=f"Otwarty plik: {selected_file}", text_color="#28a745")
-                self.sync_line_numbers()
+                self.on_content_changed(None)
 
                 self.status_midi_label.configure(text="Wybrany utwór: (brak)", text_color="#aaaaaa")
                 self.play_btn.configure(state="disabled")

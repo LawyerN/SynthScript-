@@ -278,3 +278,42 @@ track "LeftHand" {
     }
 }
 ```
+
+## Uruchomienie projektu
+
+Projekt oferuje dwa sposoby interakcji: tradycyjny kompilator uruchamiany z poziomu konsoli (CLI) oraz graficzne środowisko programistyczne (GUI) zbudowane przy użyciu biblioteki `customtkinter`.
+
+### 1. Wymagania wstępne
+
+Do uruchomienia projektu wymagany jest interpreter języka **Python 3.8+** oraz instalacja niezbędnych bibliotek. Zależności możesz zainstalować za pomocą managera pakietów `pip`:
+
+```bash
+pip install lark midiutil customtkinter
+
+Uwaga dla użytkowników Linux/macOS: Jeśli używasz systemu operacyjnego innego niż Windows, upewnij się, że masz zainstalowany serwer X11/środowisko graficzne (wymagane przez tkinter).
+
+2. Uruchomienie aplikacji graficznej (SynthScript Studio)
+Projekt zawiera dedykowany edytor z podglądem plików, podświetlaniem linii oraz wbudowanym odtwarzaczem. Aby go włączyć, uruchom plik z aplikacją okienkową:
+
+Bash
+python app_gui.py
+(Upewnij się, że podajesz poprawną nazwę pliku, w którym znajduje się klasa SynthScriptApp).
+
+3. Kompilacja z poziomu terminala (CLI)
+Jeśli wolisz kompilować pliki bezpośrednio za pomocą wiersza poleceń, użyj skryptu kompilatora, przekazując ścieżkę do pliku źródłowego .synth jako argument:
+
+Bash
+python compiler_cli.py piosenka.synth
+Po pomyślnej kompilacji program wygeneruje w tym samym katalogu plik binarny MIDI (domyślnie song.mid lub o nazwie odpowiadającej plikowi źródłowemu).
+
+4. Struktura plików projektu
+Aby skrypty uruchomieniowe działały poprawnie, zachowaj następującą strukturę katalogów:
+
+Plaintext
+├── parser/
+│   └── parser.py         # Klasa SynthScriptParser i gramatyka
+├── compiler/
+│   ├── visitor.py        # Analizator semantyczny (SynthScriptVisitor)
+│   └── midi_generator.py # Generator plików .mid (generate_midi)
+├── app_gui.py            # Aplikacja okienkowa CustomTkinter
+└── compiler_cli.py       # Skrypt uruchomieniowy CLI
