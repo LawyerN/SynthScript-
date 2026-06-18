@@ -104,6 +104,10 @@ class SynthScriptVisitor(Interpreter):
     def rest_stmt(self, tree):
         """rest_stmt: KW_REST expression"""
         duration = self._evaluate(tree.children[1])
+        if duration <= 0:
+            line = getattr(tree.children[0], 'line', '?')
+            raise SemanticError(f"[Linia {line}] Długość pauzy (rest) musi być większa od zera! Podano: {duration}")
+
         self.current_track["events"].append({
             "type": "rest",
             "duration": duration
@@ -135,6 +139,9 @@ class SynthScriptVisitor(Interpreter):
         """loop_stmt: KW_LOOP expression LBRACE statement* RBRACE"""
         iterations = self._evaluate(tree.children[1])
 
+        if iterations < 0:
+            line = getattr(tree.children[0], 'line', '?')
+            raise SemanticError(f"[Linia {line}] Liczba powtórzeń pętli loop nie może być ujemna ({iterations})!")
 
         statements_to_execute = []
         for child in tree.children[2:]:
@@ -162,6 +169,9 @@ class SynthScriptVisitor(Interpreter):
             elif op == '*':
                 result *= next_val
             elif op == '/':
+                if next_val == 0:
+                    line = getattr(tree.children[i], 'line', '?')
+                    raise SemanticError(f"[Linia {line}] Błąd matematyczny: Wykryto próbe dzielenia przez zero!")
                 result = result // next_val
             i += 2
         return result
@@ -231,6 +241,12 @@ class SynthScriptVisitor(Interpreter):
 
     def _add_play_event(self, pitch, duration, velocity):
         """Dodaje sformatowane zdarzenie do aktualnego utworu."""
+        if self.current_track is None:
+            raise SemanticError("Błąd krytyczny: Próba zagrania nuty (play) poza jakimkolwiek blokiem track { ... }!")
+
+        if duration <= 0:
+            raise SemanticError(f"Długość nuty musi być większa od zera! Podano: {duration}")
+
         self.current_track["events"].append({
             "type": "play",
             "pitch": pitch,

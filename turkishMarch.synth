@@ -1,39 +1,121 @@
 meter 2|4
 
+func motywPoczatkowy() {
+     play B3 16 $f
+     play A3 16 $f
+     play G#3 16 $f
+     play A3 16 $f
+
+     play C4 8 $f
+     rest 8
+     play D4 16 $f
+     play C4 16 $f
+     play B3 16 $f
+     play C4 16 $f
+
+     play E4 8 $f
+     rest 8
+     play F4 16 $f
+     play E4 16 $f
+     play D#4 16 $f
+     play E4 16 $f
+
+     play B4 16 $f
+     play A4 16 $f
+     play G#4 16 $f
+     play A4 16 $f
+     play B4 16 $f
+     play A4 16 $f
+     play G#4 16 $f
+     play A4 16 $f
+
+     play C5 4 $f
+}
+
+func lewaRekaPoczatek(n) {
+    rest 4
+    loop 2 {
+        play A2 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+    }
+
+    loop 2 {
+        play A2 8 $f
+        play [C3, E3] 8 $f
+    }
+
+    if (n == 1){
+        play A2 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+        play [C3, E3] 8 $f
+    }
+    if (n == 2) {
+        play F2 8 $f
+        loop 3 {
+            play [A2, D#3] 8 $f
+        }
+    }
+}
+
+func trzeciaCzescP(i){
+    play [A3, A4] 8 $f
+    play [B3, B4] 8 $f
+    play [C#3, C#4] 4 $f
+    play [A3, A4] 8 $f
+    play [B3, B4] 8 $f
+    play [C#3, C#4] 8 $f
+    play [B3, B4] 8 $f
+    play [A3, A4] 8 $f
+    play [G#3, G#4] 8 $f
+    play [F#3, F#4] 8 $f
+    if ( i == 1 ){
+        play [G#3, G#4] 8 $f
+        play [A3, A4] 8 $f
+        play [B3, B4] 8 $f
+        play [G#3, G#4] 8 $f
+        play [E3, E4] 8 $f
+    }
+    if ( i == 2 ){
+        play [B3, B4] 8 $f
+        play [G#3, G#4] 8 $f
+        play [E3, E4] 8 $f
+        play [A3, A4] 4 $f
+    }
+}
+
+func trzeciaCzescL(j){
+    loop 2 {
+        play [A1, C#2, E2, A2] 8 $f
+        loop 3 { 
+            play A2 8 $f 
+        }
+    }
+    play [D1, F#1, A1, D2] 8 $f
+    play D2 8 $f
+    if (j == 1){
+        play [D#1, F#1, A1, D#2] 8 $f
+        play D#2 8 $f 
+    }
+    play [E1, G#1, B1, E2] 8 $f
+    if (j == 1){
+       play E2 8 $f 
+       play E2 8 $f 
+    }
+    play E2 8 $f 
+    if (j != 1){
+        play A2 4 $f
+    }
+}
+
 track "Melodia" {
     instrument 1
     tempo 130
 
     loop 2 {
-        play B3 16 $f
-        play A3 16 $f
-        play G#3 16 $f
-        play A3 16 $f
-
-        play C4 8 $f
-        rest 8
-        play D4 16 $f
-        play C4 16 $f
-        play B3 16 $f
-        play C4 16 $f
-
-        play E4 8 $f
-        rest 8
-        play F4 16 $f
-        play E4 16 $f
-        play D#4 16 $f
-        play E4 16 $f
-
-        play B4 16 $f
-        play A4 16 $f
-        play G#4 16 $f
-        play A4 16 $f
-        play B4 16 $f
-        play A4 16 $f
-        play G#4 16 $f
-        play A4 16 $f
-
-        play C5 4 $f
+        motywPoczatkowy()
         play A4 8 $f
         play C5 8 $f
 
@@ -62,7 +144,7 @@ track "Melodia" {
         play [D#4, F#4] 8 $f
         play E4 4 $f
     }
-
+    x = 0
     loop 2 {
 	//Tu zaczyna sie druga czesc
 	play [C4, E4] 8 $mf
@@ -73,9 +155,17 @@ track "Melodia" {
 	play G4 16 $mf
 	play F4 16 $mf
 	play E4 16 $mf
-	play [B3, D4] 8 $mf
-        play G3 8 $mf
+        if (x < 1){
+            play [B3, D4] 8 $mf
+            play G3 8 $mf
+        } 
+        if (x == 1) {
+            play [B3, D4] 4 $mf
+        }
+        x = x + 1
     }
+
+    y = 0
     loop 2 {
         play [A3, C4] 8 $mf
         play [B3, D4] 8 $mf
@@ -85,8 +175,39 @@ track "Melodia" {
         play E4 16 $mf
         play D4 16 $mf
         play C4 16 $mf
-        play [G#3,B3] 8 $mf
-        play E3 8 $mf
+        if (y < 1) {
+            play [G#3,B3] 8 $mf
+            play E3 8 $mf
+        }
+        if (y == 1){
+            play [G#3,B3] 4 $mf
+        }
+        y = y + 1
+    }
+
+    // Trzecia czesc
+    motywPoczatkowy()
+    play A4 8 $f
+    play B4 8 $f
+    play C5 8 $f
+    play B4 8 $f
+    play A4 8 $f
+    play G#4 8 $f
+    play A4 8 $f
+    play E4 8 $f
+    play F4 8 $f
+    play D4 8 $f
+    play C4 4 $f
+    play B3 8 $f
+    loop 2 {
+        play C4 32 $f
+        play B3 32 $f
+    }
+    play A3 4 $f
+
+    loop 2 {
+        trzeciaCzescP(1)
+        trzeciaCzescP(2)
     }
 }
 
@@ -95,23 +216,7 @@ track "LeftHand" {
     tempo 130
 
     loop 2 {
-        rest 4
-        loop 2 {
-            play A2 8 $f
-            play [C3, E3] 8 $f
-            play [C3, E3] 8 $f
-            play [C3, E3] 8 $f
-        }
-
-        loop 2 {
-            play A2 8 $f
-            play [C3, E3] 8 $f
-        }
-
-        play A2 8 $f
-        play [C3, E3] 8 $f
-        play [C3, E3] 8 $f
-        play [C3, E3] 8 $f
+        lewaRekaPoczatek(1)
 
         loop 2 {
             rest 32
@@ -147,5 +252,27 @@ track "LeftHand" {
         play C2 8 $mf
         play C3 8 $mf
         play E2 4 $mf
+    }
+    
+    // Trzecia czesc
+    lewaRekaPoczatek(2)
+    play E2 8 $f
+    play [A2, E3] 8 $f
+    play D2 8 $f
+    play [F2, B2] 8 $f
+    play C2 8 $f
+    play [E2, A2] 8 $f
+    play D2 8 $f
+    play [F2, B2] 8 $f
+    play [E2, A2] 8 $f
+    play [E2, A2] 8 $f
+    play [E2, G#2] 8 $f
+    play [E2, G#2] 8 $f
+    play [A1, A2] 8 $f
+    
+    loop 2 {
+        rest 4
+        trzeciaCzescL(1)
+        trzeciaCzescL(2)
     }
 }
