@@ -1,9 +1,9 @@
-from lark import Lark
+from lark import Lark, UnexpectedToken, UnexpectedCharacters, LarkError
 
 SYNTH_SCRIPT_GRAMMAR = r"""
 ?start: program
 
-# Zezwalamy na zmienne (assignment) i makra (func_def) przed utworami!
+// Zezwalamy na zmienne (assignment) i makra (func_def) przed utworami!
 program: meter_stmt? (assignment | func_def)* track+
 
 track: KW_TRACK STRING LBRACE statement* RBRACE
@@ -107,9 +107,29 @@ COMMENT: /\/\/.*/
 %ignore COMMENT
 """
 
+# ... (Twój całyy string SYNTH_SCRIPT_GRAMMAR bez zmian) ...
+
 class SynthScriptParser:
     def __init__(self):
         self.parser = Lark(SYNTH_SCRIPT_GRAMMAR, parser='lalr', start='program')
 
     def parse(self, code_text):
-        return self.parser.parse(code_text)
+        try:
+            return self.parser.parse(code_text)
+        except UnexpectedToken as e:
+            # Tworzymy piękny opis, wskazujący dokładnie na zły token
+            context = e.get_context(code_text).strip()
+            raise SyntaxError(
+                f"Błąd składniowy w linii {e.line}, kolumnie {e.column}.\n"
+                f"Niespodziewany token '{e.token}' (oczekiwano jednego z: {', '.join(e.expected)})\n"
+                f"Kontekst błędu:\n{context}"
+            )
+        except UnexpectedCharacters as e:
+            context = e.get_context(code_text).strip()
+            raise SyntaxError(
+                f"Błąd leksykalny w linii {e.line}, kolumnie {e.column}.\n"
+                f"Niedozwolony znak.\n"
+                f"Kontekst błędu:\n{context}"
+            )
+        except LarkError as e:
+            raise SyntaxError(f"Ogólny błąd parsera: {str(e)}")

@@ -6,7 +6,7 @@ from compiler.visitor import SynthScriptVisitor
 from parser.parser import SynthScriptParser
 
 
-def compile_synthscript(source_code_path, output_midi_path="song.mid"):
+def compile_synthscript(source_code_path, output_midi_path="song2.mid"):
     with open(source_code_path, 'r', encoding='utf-8') as f:
         code = f.read()
 

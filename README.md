@@ -279,6 +279,24 @@ track "LeftHand" {
 }
 ```
 
+## Obsługa błędów i diagnostyka (Raportowanie)
+
+Kompilator SynthScript został wyposażony w dwupoziomowy system wykrywania i raportowania błędów, który w przyjazny sposób (wskazując dokładną linię oraz kontekst) informuje programistę o problemach w kodzie źródłowym:
+
+### 1. Błędy składniowe i leksykalne (Parser)
+Przechwytywane automatycznie na etapie analizy tokenów przez bibliotekę Lark. Parser generuje precyzyjny wskaźnik graficzny `^` pokazujący miejsce wystąpienia błędu.
+* **Zły token / Brak zamknięcia bloku:** `Błąd składniowy w linii 4, kolumnie 15. Niespodziewany token '}' (oczekiwano jednego z: KW_PLAY, KW_LOOP...)`
+* **Niedozwolony znak:** `Błąd leksykalny w linii 3. Niedozwolony znak.` (np. użycie `@` lub `$` poza dozwolonym kontekstem).
+
+### 2. Błędy semantyczne (Wizytator)
+Wykrywane podczas przechodzenia po drzewie AST przez klasę `SynthScriptVisitor`. Sprawdzają one logiczną i muzyczną poprawność kodu, która nie wynika z samej struktury gramatyki:
+* **Użycie niezdefiniowanej zmiennej:** `[Linia 5] Użyto niezdefiniowanej zmiennej: 'predkosc'`
+* **Błędy matematyczne:** `[Linia 12] Błąd matematyczny: Wykryto próbę dzielenia przez zero!`
+* **Walidacja zakresu instrumentów:** `Identyfikator instrumentu General MIDI musi być w zakresie 1-128. Podano: 250`
+* **Walidacja muzyczna oktaw:** `Oktawa poza dopuszczalnym zakresem muzycznym (0-8): C9`
+* **Błędy wykonania pętli:** `[Linia 8] Liczba powtórzeń pętli loop nie może być ujemna!`
+* **Kontrola argumentów makr:** `Funkcja 'GrajGamy' oczekuje 2 argumentów, podano 1.`
+
 ## Uruchomienie projektu
 
 Projekt oferuje dwa sposoby interakcji: tradycyjny kompilator uruchamiany z poziomu konsoli (CLI) oraz graficzne środowisko programistyczne (GUI) zbudowane przy użyciu biblioteki `customtkinter`.
